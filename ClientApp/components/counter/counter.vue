@@ -10,4 +10,20 @@
     </div>
 </template>
 
-<script src="./counter.ts"></script>
+<script>
+export default {
+    name: 'CounterComponent',
+
+    data() {
+        return {
+            currentcount: 0
+        }
+    },
+
+    methods: {
+        incrementCounter() {
+            this.currentcount++;
+        }
+    }
+}
+</script>

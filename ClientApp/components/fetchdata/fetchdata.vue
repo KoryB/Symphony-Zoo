@@ -14,7 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in forecasts">
+                <tr v-for="(item, index) in forecasts", :key=index>
                     <td>{{ item.dateFormatted }}</td>
                     <td>{{ item.temperatureC }}</td>
                     <td>{{ item.temperatureF }}</td>
@@ -27,4 +27,26 @@
     </div>
 </template>
 
-<script src="./fetchdata.ts"></script>
+<script>
+export default {
+    name: "FetchDataComponent",
+
+    data() {
+        return {
+            forecasts: []
+        }
+    },
+
+    methods: {
+        
+    },
+
+    mounted() {
+            fetch('api/SampleData/WeatherForecasts')
+                .then(response => response.json())
+                .then(data => {
+                    this.forecasts = data;
+                });
+    }
+}
+</script>

@@ -11,4 +11,14 @@
     </div>
 </template>
 
-<script src="./app.ts"></script>
+<script>
+import { MenuComponent } from '././../navmenu/navmenu.vue';
+
+export default {
+    name: 'AppComponent',
+
+    components: {
+        MenuComponent,
+    }
+}
+</script>
