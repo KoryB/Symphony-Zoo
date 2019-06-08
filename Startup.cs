@@ -53,12 +53,6 @@ namespace Symphony_Zoo_New
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                await next();
-            });
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
