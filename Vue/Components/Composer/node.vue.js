@@ -8,6 +8,12 @@ module.exports = {
     },
 
     template: `
-    <input v-model="note" type="number" class="small-input">
-    `
+    <input v-model="note" type="number" class="small-input" v-on:input="updateNote($event)">
+    `,
+
+    methods: {
+        updateNote($event) {
+            this.$emit('update-note', $event);
+        }
+    }
 }
