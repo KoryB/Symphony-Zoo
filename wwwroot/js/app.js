@@ -46,41 +46,67 @@ module.exports = {
         },
 
         postMidi() {
-            var upperTrack = new MidiWriter.Track()
-            var lowerTrack = new MidiWriter.Track()
+            console.log("Starting fetch")
             
-            this.upperNotes.forEach(item => {
-                var event;
+            var xhttp = new XMLHttpRequest();
+            var me = this;
 
-                if (item < 0) {
-                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
-                } else {
-                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const responseJSON = JSON.parse(xhttp.responseText);
+                    const guid = responseJSON[1].guid;
+
+                    var upperTrack = new MidiWriter.Track()
+                    var lowerTrack = new MidiWriter.Track()
+                    
+                    me.upperNotes.forEach(item => {
+                        var event;
+        
+                        if (item < 0) {
+                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
+                        } else {
+                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                        }
+        
+                        upperTrack.addEvent(event)
+                    });
+        
+                    me.lowerNotes.forEach(item => {
+                        var event;
+        
+                        if (item < 0) {
+                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
+                        } else {
+                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                        }
+        
+                        lowerTrack.addEvent(event)
+                    });
+        
+                    var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
+        
+                    console.log(writer.dataUri())
+                    
+                    var xhttpPOST = new XMLHttpRequest();
+                    xhttpPOST.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            console.log("Sent it off!")
+                        }
+
+                        console.log(this.status);
+                    }
+                    xhttpPOST.open("POST", "http://localhost:5000/api/graph", true)
+                    xhttpPOST.setRequestHeader("Content-type", "application/json");
+                    xhttpPOST.send({
+                        guid: guid,
+                        midiData: writer.dataUri()
+                    });
                 }
-
-                upperTrack.addEvent(event)
-            });
-
-            this.lowerNotes.forEach(item => {
-                var event;
-
-                if (item < 0) {
-                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
-                } else {
-                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
-                }
-
-                lowerTrack.addEvent(event)
-            });
-
-            var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
-
-            console.log(writer.dataUri())
-            console.log(writer.buildFile())
+            };
+            xhttp.open("GET", "http://localhost:5000/api/Graph", true);
+            xhttp.send();
         }
     }
-
-
 }
 
 },{"./node.vue.js":2,"midi-writer-js":4}],2:[function(require,module,exports){
