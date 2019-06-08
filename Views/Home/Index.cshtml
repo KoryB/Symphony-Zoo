@@ -1,9 +1,17 @@
-@{
-    ViewData["Title"] = "Home Page";
+﻿@{
+    ViewBag.Title = "Home Page";
 }
+<div id="app">
+    <h1>{{message}}</h1>
+</div>
 
-<div id='app-root'>Loading...</div>
+<script src="~/js/vue.min.js"></script>
 
-@section scripts {
-    <script src="~/dist/main.js" asp-append-version="true"></script>
-}
+<script>
+    const v = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue.js!'
+        }
+    })
+</script>
