@@ -13,7 +13,7 @@ module.exports = {
 
     methods: {
         updateNote($event) {
-            this.$emit('update-note', $event);
+            this.$emit('update-note', Number($event.target.value));
         }
     }
 }

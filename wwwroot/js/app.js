@@ -7,9 +7,8 @@ module.exports = {
     
     data() {
         return {
-            upperNotes: [0, 1, 2, 3, 4, 5, 6, 7],
-            lowerNotes: [10, 11, 12, 13, 14, 15, 16, 17],
-            notes: [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+            upperNotes: [-1, -1, -1, -1, -1, -1, -1, -1],
+            lowerNotes: [-1, -1, -1, -1, -1, -1, -1, -1]
         }
     },
 
@@ -19,11 +18,11 @@ module.exports = {
 
     template: `
     <div>
-        <p>{{notes}}</p>
-        <form class="composer">
-            <div><composer-node v-for="i in upperNotes" :key="i" v-on:update-note="updateNote(i, $event)"/></div>
-            <div><composer-node v-for="i in lowerNotes" :key="i" /></div>
-        </form>
+        <div class="composer">
+            <div><composer-node v-for="i in Array(8).keys()" :key="i"   v-on:update-note="updateUpperNote(i, $event)"/></div>
+            <div><composer-node v-for="i in Array(8).keys()" :key="i+7" v-on:update-note="updateLowerNote(i, $event)"/></div>
+            <button v-on:click="postMidi">Send your masterpiece!</button>
+        </div>
     </div>
     `,
 
@@ -38,9 +37,46 @@ module.exports = {
     },
 
     methods: {
-        updateNote(index, $event) {
-            this.notes[index] = Number($event.target.value);
-            console.log(this.notes)
+        updateUpperNote(index, value) {
+            this.upperNotes[index] = value;
+        },
+
+        updateLowerNote(index, value) {
+            this.lowerNotes[index] = value;
+        },
+
+        postMidi() {
+            var upperTrack = new MidiWriter.Track()
+            var lowerTrack = new MidiWriter.Track()
+            
+            this.upperNotes.forEach(item => {
+                var event;
+
+                if (item < 0) {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
+                } else {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                }
+
+                upperTrack.addEvent(event)
+            });
+
+            this.lowerNotes.forEach(item => {
+                var event;
+
+                if (item < 0) {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
+                } else {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                }
+
+                lowerTrack.addEvent(event)
+            });
+
+            var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
+
+            console.log(writer.dataUri())
+            console.log(writer.buildFile())
         }
     }
 
@@ -63,7 +99,7 @@ module.exports = {
 
     methods: {
         updateNote($event) {
-            this.$emit('update-note', $event);
+            this.$emit('update-note', Number($event.target.value));
         }
     }
 }
