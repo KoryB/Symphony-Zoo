@@ -6,15 +6,20 @@
     <test-component></test-component>
 </div>
 
-<script src="~/js/vue.min.js"></script>
 
-<script>
-    //import TestComponent from "../Components/test.vue"
+@section scripts {
+    <script src="~/js/vue.min.js"></script>
 
-    const v = new Vue({
-        el: '#app',
-        data: {
-            message: 'Hello Vue.js!'
-        }
-    })
-</script>
+    <script>
+        //import TestComponent from "../Components/test.vue"
+
+        const v = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue.js!'
+            }
+        })
+
+        
+    </script>
+}
