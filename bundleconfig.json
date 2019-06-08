@@ -17,9 +17,9 @@
     "sourceMap": false
   },
   {
-      "outputFileName": "wwwroot/js/vue.min.js",
-      "inputFiles": [
-          "node_modules/vue/dist/vue.min.js"
-      ]
+    "outputFileName": "wwwroot/js/vue.min.js",
+    "inputFiles": [
+        "node_modules/vue/dist/vue.min.js"
+    ]
   }
 ]
