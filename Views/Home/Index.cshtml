@@ -3,11 +3,14 @@
 }
 <div id="app">
     <h1>{{message}}</h1>
+    <test-component></test-component>
 </div>
 
 <script src="~/js/vue.min.js"></script>
 
 <script>
+    //import TestComponent from "../Components/test.vue"
+
     const v = new Vue({
         el: '#app',
         data: {
