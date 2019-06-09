@@ -8,6 +8,6 @@ namespace Symphony_Zoo_New.Models
     public class Measure_DataTransferObject
     {
         public Guid Guid;
-        public byte[] MidiData;
+        public string MidiData;
     }
 }

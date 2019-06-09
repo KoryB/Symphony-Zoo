@@ -26,8 +26,8 @@ namespace Symphony_Zoo_New.Models
         public bool Edge { get { return edge; } set { edge = value; } }
         private Guid guid;
         public Guid Guid { get { return guid; } set { guid = value; } }
-        private byte[] midiData;
-        public byte[] MidiData { get { return midiData; } set { midiData = value; } }
+        private string midiData;
+        public string MidiData { get { return midiData; } set { midiData = value; } }
         public Measure_DataTransferObject DTO
         {
             get

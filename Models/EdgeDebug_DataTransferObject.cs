@@ -9,7 +9,7 @@ namespace Symphony_Zoo_New.Models
     {
         public int FromId;
         public int ToId;
-        public byte[] MidiData;
+        public string MidiData;
         public bool InProgress;
         public bool Edge;
     }
