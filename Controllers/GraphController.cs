@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
+//using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Symphony_Zoo_New.Models;
 using Symphony_Zoo_New.Utility;
 
@@ -11,8 +12,9 @@ namespace Symphony_Zoo_New.Controllers
 
 
     //[Produces("application/json")]
-    [Route("api/Graph")]
-    public class GraphController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GraphController : ControllerBase
     {
         private string graphFile;
         private Graph graph;
@@ -24,7 +26,14 @@ namespace Symphony_Zoo_New.Controllers
             graph = new Graph();
         }
 
-        public IHttpActionResult GetNeighboringMeasures()
+        /*[HttpGet]
+        public ActionResult<string> Get()
+        {
+            return "hello";
+        }*/
+        
+        [HttpGet]
+        public ActionResult<Measure_DataTransferObject[]> Get()
         {
             Measure needsComposing;
             Measure m;
@@ -61,18 +70,22 @@ namespace Symphony_Zoo_New.Controllers
                     where goingTo.Contains(vertex) == false
                     select vertex).ToArray();
 
-                    int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
-
-                    needsComposing = new Measure()
+                    if(notGoingTo.Length > 0)
                     {
-                        Edge = true,
-                        FromId = m.ToId,
-                        ToId = GoToVertex,
-                        InProgress = true
-                    };
-                    
-                    graph.AddToGraph(needsComposing);
-                    measures = new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, graph.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0].DTO };
+                        int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
+
+                        needsComposing = new Measure()
+                        {
+                            Edge = true,
+                            FromId = m.ToId,
+                            ToId = GoToVertex,
+                            InProgress = true
+                        };
+
+                        graph.AddToGraph(needsComposing);
+                        measures = new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, graph.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0].DTO };
+                    }
+
                 }
             }
             if(measures == null)
@@ -92,7 +105,7 @@ namespace Symphony_Zoo_New.Controllers
             }
             
             
-            return Ok(measures);
+            return measures;
         }
 
 
