@@ -33,7 +33,7 @@ namespace Symphony_Zoo_New.Models
             foreach(string file in Directory.EnumerateFiles(savedFileLocation)) 
             {
                 // Deserialize the file to look at the measure that it describes, could use error checking.
-                Measure curMeasure = JsonConvert.DeserializeObject<Measure>(file);
+                Measure curMeasure = JsonConvert.DeserializeObject<Measure>(File.ReadAllText(file));
 
                 // Check to see if a vertex ID exists that is larger than largestVertexID.
                 if(curMeasure.ToId > largestVertexID) largestVertexID = curMeasure.ToId;

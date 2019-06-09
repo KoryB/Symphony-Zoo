@@ -16,6 +16,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Saved\" />
+  </ItemGroup>
+
   <Target Name="BrowserifyApp" BeforeTargets="Build">
         <Exec Command="browserify ./Vue/app.js -o ./wwwroot/js/app.js" />
   </Target>
