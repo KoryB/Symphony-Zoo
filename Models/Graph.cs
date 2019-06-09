@@ -17,6 +17,7 @@ namespace Symphony_Zoo_New.Models
 
         public Graph()
         {
+            edges = new List<Measure>();
             Measure firstEverMeasure = new Measure
             {
                 InProgress = false,
@@ -37,13 +38,10 @@ namespace Symphony_Zoo_New.Models
                  select edges.IndexOf(edge)).ToArray();
                 if (checkedOutMeasure.Length > 0)
                 {
-                    if (GetMeasuresEnteringVertex(edges[checkedOutMeasure[0]].FromId).First().Edge == true)
-                    {
-                        //save the midi file
-                        edges[checkedOutMeasure[0]].Edge = false;
-                        edges[checkedOutMeasure[0]].InProgress = false;
-                        //edges[checkedOutMeasure[0]].ToId = ;
-                    }
+                    //save the midi file
+                    edges[checkedOutMeasure[0]].Edge = !GetMeasuresEnteringVertex(edges[checkedOutMeasure[0]].FromId).First().Edge;
+                    edges[checkedOutMeasure[0]].InProgress = false;
+                    edges[checkedOutMeasure[0]].MidiData = measure.MidiData;
                 }
             }
         }

@@ -17,15 +17,15 @@ namespace Symphony_Zoo_New.Models
             get { return inProgress; }
             set
             {
-                inProgress = value;
-                if (inProgress){ guid = Guid.NewGuid(); }
+                if (value == true){ guid = Guid.NewGuid(); }
                 else { guid = default(Guid); }
+                inProgress = value;
             }
         }
         private int fromId;//vertex
         public int FromId { get { return fromId; } set { fromId = value; } }
-        private int toid;//vertex
-        public int ToId { get { return ToId; } set { ToId = value; } }
+        private int toId;//vertex
+        public int ToId { get { return toId; } set { toId = value; } }
         private bool edge;//0 for logical node, 1 for logical edge
         public bool Edge { get { return edge; } set { edge = value; } }
         private Guid guid;
