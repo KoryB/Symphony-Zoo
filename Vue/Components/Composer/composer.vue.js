@@ -1,13 +1,30 @@
 var ComposerNode = require('./node.vue.js')
 var MidiWriter = require('midi-writer-js')
+var MidiParser = require('midi-parser-js')
 
 module.exports = {
     name: "Composer",
+
+    props: {
+        editable: {
+            type: Boolean,
+            default: true
+        },
+
+        upperNotes: {
+            type: Array,
+            default: [-1, -1, -1, -1, -1, -1, -1, -1]
+        },
+
+        lowerNotes: {
+            type:Array,
+            default: [-1, -1, -1, -1, -1, -1, -1, -1]
+        }
+    },
     
     data() {
         return {
-            upperNotes: [-1, -1, -1, -1, -1, -1, -1, -1],
-            lowerNotes: [-1, -1, -1, -1, -1, -1, -1, -1]
+
         }
     },
 
@@ -18,9 +35,12 @@ module.exports = {
     template: `
     <div>
         <div class="composer">
-            <div><composer-node v-for="i in Array(8).keys()" :key="i"   v-on:update-note="updateUpperNote(i, $event)"/></div>
-            <div><composer-node v-for="i in Array(8).keys()" :key="i+7" v-on:update-note="updateLowerNote(i, $event)"/></div>
-            <button v-on:click="postMidi">Send your masterpiece!</button>
+            <div class="input-grid">
+                <div><composer-node :editable="editable" v-for="i in Array(8).keys()" :key="i"   :note="upperNotes[i]" v-on:update-note="updateUpperNote(i, $event)"/></div>
+                <div><composer-node :editable="editable" v-for="i in Array(8).keys()" :key="i+7" :note="lowerNotes[i]" v-on:update-note="updateLowerNote(i, $event)"/></div>
+            </div>
+            <button v-on:click="postMidi" v-if="editable">Send!</button>
+            <button v-on:click="previewMidi">Play</button>
         </div>
     </div>
     `,
@@ -104,6 +124,10 @@ module.exports = {
             };
             xhttp.open("GET", "http://localhost:5000/api/Graph", true);
             xhttp.send();
+        },
+
+        previewMidi() {
+            console.log("Nice tunes dude!");
         }
     }
 }

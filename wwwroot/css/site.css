@@ -58,8 +58,17 @@ body {
 /* Component styles ---------------- */
 
 .composer {
+  display: inline-grid;
   background-color: lightgray;
-  width: 480px;
+  grid-template-columns: auto auto;
+
+}
+
+.input-grid {
+  display: inline-grid;
+
+  grid-row-start: 1;
+  grid-row-end: 3;
 }
 
 .small-input {

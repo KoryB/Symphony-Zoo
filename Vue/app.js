@@ -1,12 +1,13 @@
-var Composer = require('./Components/Composer/composer.vue.js')
+var ComposerPanel = require('./Components/Composer/composer-panel.vue.js')
 
-const app = new Vue({
+const v = new Vue({
     el: '#app',
     data: {
-        
+        editable: true,
+        mode: ''
     },
 
     components: {
-        Composer,
+        ComposerPanel,
     }
 })
