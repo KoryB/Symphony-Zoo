@@ -90,7 +90,7 @@ namespace Symphony_Zoo_New.Models
 
                     // DON: Serialize and write out a file, filename is going to be checkedOutMeasure[idx]
                     // Opting to use the index into the edges list as a best practice, rather than measure.
-                    string fname = "checkedOutMeasure_" + checkedOutMeasure[0];
+                    string fname = "measure_" + checkedOutMeasure[0];
                     string fdata = JsonConvert.SerializeObject(edges[checkedOutMeasure[0]]);
 
                     // DON: Just overwrite whatever is already there with that name.
