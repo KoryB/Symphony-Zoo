@@ -32,7 +32,37 @@ namespace Symphony_Zoo_New.Models
         {
             get
             {
-                return new Measure_DataTransferObject() { Guid = guid, MidiData = MidiData};
+                return new Measure_DataTransferObject()
+                {
+                    Guid = guid,
+                    MidiData = midiData
+                };
+            }
+        }
+        public Edge_DataTransferObject Edge_DTO
+        {
+            get
+            {
+                return new Edge_DataTransferObject()
+                {
+                    FromId = fromId,
+                    ToId = toId,
+                    MidiData = midiData
+                };
+            }
+        }
+        public EdgeDebug_DataTransferObject EdgeDebug_DTO
+        {
+            get
+            {
+                return new EdgeDebug_DataTransferObject()
+                {
+                    FromId = fromId,
+                    ToId = toId,
+                    MidiData = midiData,
+                    InProgress = inProgress,
+                    Edge = edge
+                };
             }
         }
     }

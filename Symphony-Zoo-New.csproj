@@ -12,10 +12,12 @@
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
   <Target Name="BrowserifyApp" BeforeTargets="Build">
-        <Exec Command="browserify ./Vue/app.js -o ./wwwroot/js/app.js"/>
+        <Exec Command="browserify ./Vue/app.js -o ./wwwroot/js/app.js" />
   </Target>
 
 </Project>
