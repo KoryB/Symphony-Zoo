@@ -19,6 +19,11 @@ module.exports = {
         lowerNotes: {
             type:Array,
             default: [-1, -1, -1, -1, -1, -1, -1, -1]
+        },
+
+        guid: {
+            type: String,
+            default: "-1"
         }
     },
     
@@ -46,8 +51,8 @@ module.exports = {
     `,
 
     computed: {
-        style() {
-            
+        editable() {
+            return this.guid !== "-1"
         }
     },
 
@@ -65,68 +70,52 @@ module.exports = {
         },
 
         postMidi() {
-            console.log("Starting fetch")
+            var upperTrack = new MidiWriter.Track()
+            var lowerTrack = new MidiWriter.Track()
+            
+            this.upperNotes.forEach(item => {
+                var event;
 
-            var me = this;
+                if (item < 0) {
+                    event = new MidiWriter.NoteEvent({pitch: [0], duration: 8})
+                } else {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                }
+
+                upperTrack.addEvent(event)
+            });
+
+            this.lowerNotes.forEach(item => {
+                var event;
+
+                if (item < 0) {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
+                } else {
+                    event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
+                }
+
+                lowerTrack.addEvent(event)
+            });
+
+            var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
+
+            var item =
+            {
+                guid: this.guid,
+                midiData: writer.base64()
+            }
 
             $.ajax({
-                type: "GET",
+                type: "POST",
+                accepts: "application/json",
                 url: "/api/compose",
-                cache: false,
-
-                success: function(data) {
-                    const guid = data[1].guid;
-
-                    var upperTrack = new MidiWriter.Track()
-                    var lowerTrack = new MidiWriter.Track()
-                    
-                    me.upperNotes.forEach(item => {
-                        var event;
-        
-                        if (item < 0) {
-                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
-                        } else {
-                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
-                        }
-        
-                        upperTrack.addEvent(event)
-                    });
-        
-                    me.lowerNotes.forEach(item => {
-                        var event;
-        
-                        if (item < 0) {
-                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8, wait: 8})
-                        } else {
-                            event = new MidiWriter.NoteEvent({pitch: [item], duration: 8})
-                        }
-        
-                        lowerTrack.addEvent(event)
-                    });
-        
-                    var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
-        
-                    var item =
-                    {
-                        guid: guid,
-                        midiData: writer.dataUri()
-                    }
-
-                    console.log(writer.dataUri())
-
-                    $.ajax({
-                        type: "POST",
-                        accepts: "application/json",
-                        url: "/api/compose",
-                        contentType: "application/json",
-                        data: JSON.stringify(item),
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log(jqXHR, textStatus, errorThrown)
-                        },
-                        success: function(result) {
-                            console.log(result);
-                        }
-                    });
+                contentType: "application/json",
+                data: JSON.stringify(item),
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR, textStatus, errorThrown)
+                },
+                success: function(result) {
+                    console.log(result);
                 }
             });
         },
