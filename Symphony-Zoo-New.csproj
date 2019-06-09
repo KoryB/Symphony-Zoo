@@ -13,8 +13,10 @@
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-
-    <Content Include="Vue\**\*" PackagePath="/js/" />
   </ItemGroup>
+
+  <Target Name="BrowserifyApp" BeforeTargets="Build">
+        <Exec Command="browserify ./Vue/app.js -o ./wwwroot/js/app.js"/>
+  </Target>
 
 </Project>
