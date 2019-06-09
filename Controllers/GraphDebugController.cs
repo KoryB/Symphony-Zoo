@@ -10,13 +10,13 @@ namespace Symphony_Zoo_New.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GraphController : ControllerBase
+    public class GraphDebugController : ControllerBase
     {
         //GET /api/graph
         [HttpGet]
         public ActionResult<string> Get()
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(Graph.Instance.GetCompletedMeasures().ToArray());
+            return Newtonsoft.Json.JsonConvert.SerializeObject(Graph.Instance.GetAllMeasures().ToArray());
         }
     }
 }

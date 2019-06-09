@@ -7,25 +7,44 @@ using Symphony_Zoo_New.Utility;
 
 namespace Symphony_Zoo_New.Models
 {
-    public class Graph
+    public sealed class Graph
     {
+        private static Graph instance = null;//singleton code
+        private static readonly object padlock = new object();//singleton code
+
         private int largestVertexID;
         public int LargestVertexID { get { return largestVertexID; } set { largestVertexID = value; } }
         private List<Measure> edges;
 
         public int NextAvailableVertexID { get { largestVertexID++; return largestVertexID; } }
 
-        public Graph()
+        Graph()
         {
+            largestVertexID = 0;
             edges = new List<Measure>();
             Measure firstEverMeasure = new Measure
             {
                 InProgress = false,
                 FromId = 0,
-                ToId = 1,
+                ToId = NextAvailableVertexID,
                 Edge = false
             };
             edges.Add(firstEverMeasure);
+        }
+
+        public static Graph Instance //singleton code
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new Graph();
+                    }
+                    return instance;
+                }
+            }
         }
 
         public void AddToGraphFromAPI(Measure measure)
@@ -92,6 +111,21 @@ namespace Symphony_Zoo_New.Models
                 from edge in edges
                 where edge.ToId == vertexID
                 select edge;
+        }
+
+        public IEnumerable<Edge_DataTransferObject> GetCompletedMeasures()
+        {
+            return
+                from edge in edges
+                where edge.InProgress == false
+                select edge.Edge_DTO;
+        }
+
+        public IEnumerable<EdgeDebug_DataTransferObject> GetAllMeasures()//for debug use only.
+        {
+            return 
+                from edge in edges
+                select edge.EdgeDebug_DTO;
         }
     }
 }
