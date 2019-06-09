@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {},
   "dependencies": {
+    "midi-parser-js": "^4.0.0",
     "midi-writer-js": "^1.7.1",
     "vue": "^2.6.10"
   }

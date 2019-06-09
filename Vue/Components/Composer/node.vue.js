@@ -1,5 +1,17 @@
 module.exports = {
     name: "ComposerNode",
+
+    props: {
+        editable: {
+            type: Boolean,
+            default: true
+        },
+
+        note: {
+            type: Number,
+            required: true
+        }
+    },
     
     data() {
         return {
@@ -8,7 +20,7 @@ module.exports = {
     },
 
     template: `
-    <input v-model="note" type="number" class="small-input" v-on:input="updateNote($event)">
+    <input :readonly="!editable" v-model="note" type="number" class="small-input" v-on:input="updateNote($event)">
     `,
 
     methods: {

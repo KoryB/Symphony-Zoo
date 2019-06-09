@@ -1,9 +1,10 @@
 var Composer = require('./Components/Composer/composer.vue.js')
 
-const app = new Vue({
+const v = new Vue({
     el: '#app',
     data: {
-        
+        editable: true,
+        mode: ''
     },
 
     components: {

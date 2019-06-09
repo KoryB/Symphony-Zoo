@@ -1,0 +1,1 @@
+var Composer = require('./composer.vue.js')
