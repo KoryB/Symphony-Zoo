@@ -66,14 +66,16 @@ module.exports = {
 
         postMidi() {
             console.log("Starting fetch")
-            
-            var xhttp = new XMLHttpRequest();
+
             var me = this;
 
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    const responseJSON = JSON.parse(xhttp.responseText);
-                    const guid = responseJSON[1].guid;
+            $.ajax({
+                type: "GET",
+                url: "/api/compose",
+                cache: false,
+
+                success: function(data) {
+                    const guid = data[1].guid;
 
                     var upperTrack = new MidiWriter.Track()
                     var lowerTrack = new MidiWriter.Track()
@@ -104,26 +106,29 @@ module.exports = {
         
                     var writer = new MidiWriter.Writer([upperTrack, lowerTrack])
         
-                    console.log(writer.dataUri())
-                    
-                    var xhttpPOST = new XMLHttpRequest();
-                    xhttpPOST.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            console.log("Sent it off!")
-                        }
-
-                        console.log(this.status);
-                    }
-                    xhttpPOST.open("POST", "http://localhost:5000/api/graph", true)
-                    xhttpPOST.setRequestHeader("Content-type", "application/json");
-                    xhttpPOST.send({
+                    var item =
+                    {
                         guid: guid,
                         midiData: writer.dataUri()
+                    }
+
+                    console.log(writer.dataUri())
+
+                    $.ajax({
+                        type: "POST",
+                        accepts: "application/json",
+                        url: "/api/compose",
+                        contentType: "application/json",
+                        data: JSON.stringify(item),
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR, textStatus, errorThrown)
+                        },
+                        success: function(result) {
+                            console.log(result);
+                        }
                     });
                 }
-            };
-            xhttp.open("GET", "http://localhost:5000/api/Graph", true);
-            xhttp.send();
+            });
         },
 
         previewMidi() {

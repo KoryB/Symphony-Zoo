@@ -2,9 +2,7 @@
     ViewBag.Title = "Home Page";
 }
 <div id="app">
-    <composer-panel></composer-panel>
-
-    <input v-model="mode">
+    <composer v-bind:upper-notes="[60, 62, 64, 66, 67, 69, 71, 72]"></composer>
 </div>
 
 @section scripts {

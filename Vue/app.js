@@ -1,4 +1,4 @@
-var ComposerPanel = require('./Components/Composer/composer-panel.vue.js')
+var Composer = require('./Components/Composer/composer.vue.js')
 
 const v = new Vue({
     el: '#app',
@@ -8,6 +8,6 @@ const v = new Vue({
     },
 
     components: {
-        ComposerPanel,
+        Composer,
     }
 })
