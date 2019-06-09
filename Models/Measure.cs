@@ -5,10 +5,6 @@ using System.Threading.Tasks;
 
 namespace Symphony_Zoo_New.Models
 {
-
-    /*
-        A Measure knows the ID for its associated midi file stored server-side.
-    */
     public class Measure
     {
         private bool inProgress;//This measure was checked out to a client to be composed.
@@ -29,7 +25,7 @@ namespace Symphony_Zoo_New.Models
         private bool edge;//0 for logical node, 1 for logical edge
         public bool Edge { get { return edge; } set { edge = value; } }
         private Guid guid;
-        public Guid Guid { get { return guid; } }
+        public Guid Guid { get { return guid; } set { guid = value; } }
         private byte[] midiData;
         public byte[] MidiData { get { return midiData; } set { midiData = value; } }
         public Measure_DataTransferObject DTO

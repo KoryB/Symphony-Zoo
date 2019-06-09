@@ -25,89 +25,85 @@ namespace Symphony_Zoo_New.Controllers
             graphFile = "graph.json";
             graph = new Graph();
         }
-
-        /*[HttpGet]
-        public ActionResult<string> Get()
-        {
-            return "hello";
-        }*/
         
+        //GET api/graph
         [HttpGet]
         public ActionResult<Measure_DataTransferObject[]> Get()
         {
-            Measure needsComposing;
             Measure m;
-            Measure_DataTransferObject[] measures = null;
+            Measure needsComposing;
             for (int i = 0; i < 10; i++)
             {
                 m = graph.GetRandomMeasure();
-                if (m.Edge)
+                if(m.InProgress == false)
                 {
-                    if (graph.GetMeasuresLeavingVertex(m.ToId).ToArray().Length == 0)
+                    if (m.Edge)
                     {
-                        //compose a node.
-                        needsComposing = new Measure()
+                        if (graph.GetMeasuresLeavingVertex(m.ToId).ToArray().Length == 0)
                         {
-                            Edge = false,
-                            FromId = m.ToId,
-                            ToId = graph.NextAvailableVertexID,
-                            InProgress = true
-                        };
-                        graph.AddToGraph(needsComposing);
-                        measures = new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO };
-                        break;
+                            //compose a node.
+                            needsComposing = new Measure()
+                            {
+                                Edge = false,
+                                FromId = m.ToId,
+                                ToId = graph.NextAvailableVertexID,
+                                InProgress = true
+                            };
+                            graph.AddToGraph(needsComposing);
+                            //Possibility #1: In this case, compose a node at the end of an edge.
+                            return new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO };
+                        }
                     }
-                }
-                else
-                {
-                    int[] goingTo =
-                    (from measure in graph.GetMeasuresLeavingVertex(m.ToId)
-                    select measure.ToId).ToArray();
-
-                    
-                    int[] notGoingTo =
-                    (from vertex in Enumerable.Range(0, graph.LargestVertexID)
-                    where goingTo.Contains(vertex) == false
-                    select vertex).ToArray();
-
-                    if(notGoingTo.Length > 0)
+                    else
                     {
-                        int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
+                        int[] goingTo =
+                        (from measure in graph.GetMeasuresLeavingVertex(m.ToId)
+                         select measure.ToId).ToArray();
 
-                        needsComposing = new Measure()
+
+                        int[] notGoingTo =
+                        (from vertex in Enumerable.Range(0, graph.LargestVertexID)
+                         where goingTo.Contains(vertex) == false
+                         select vertex).ToArray();
+
+                        if (notGoingTo.Length > 0)
                         {
-                            Edge = true,
-                            FromId = m.ToId,
-                            ToId = GoToVertex,
-                            InProgress = true
-                        };
+                            int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
 
-                        graph.AddToGraph(needsComposing);
-                        measures = new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, graph.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0].DTO };
+                            needsComposing = new Measure()
+                            {
+                                Edge = true,
+                                FromId = m.ToId,
+                                ToId = GoToVertex,
+                                InProgress = true
+                            };
+
+                            graph.AddToGraph(needsComposing);
+                            //Possibility #2: In this case, compose an edge from one node to another node.
+                            return new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, graph.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0].DTO };
+                        }
                     }
-
                 }
             }
-            if(measures == null)
+            m = graph.GetRandomNodeMeasure();
+            //Possibility #3: The catch all - compose an edge from a node to nowhere.
+            needsComposing = new Measure()
             {
-                m = graph.GetRandomNodeMeasure();
-                //compose an edge
-                needsComposing = new Measure()
-                {
-                    Edge = true,
-                    FromId = m.ToId,
-                    ToId = graph.NextAvailableVertexID,
-                    InProgress = true
-                };
+                Edge = true,
+                FromId = m.ToId,
+                ToId = graph.NextAvailableVertexID,
+                InProgress = true
+            };
 
-                graph.AddToGraph(needsComposing);
-                measures = new Measure_DataTransferObject[] {m.DTO, needsComposing.DTO};
-            }
-            
-            
-            return measures;
+            graph.AddToGraph(needsComposing);
+            return new Measure_DataTransferObject[] {m.DTO, needsComposing.DTO};
         }
 
-
+        //POST api/graph
+        [HttpPost]
+        public void Post([FromBody] Measure_DataTransferObject value)
+        {
+            graph.AddToGraphFromAPI(new Measure { Guid = value.Guid, MidiData = value.MidiData});
+        }
     }
 }
