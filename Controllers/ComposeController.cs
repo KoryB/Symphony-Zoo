@@ -48,10 +48,11 @@ namespace Symphony_Zoo_New.Controllers
 
 
                         int[] notGoingTo =
-                        (from vertex in Enumerable.Range(0, Graph.Instance.LargestVertexID)
+                        (from vertex in Enumerable.Range(0, Graph.Instance.LargestVertexID+1)
                          where goingTo.Contains(vertex) == false
                          && m.FromId != vertex
                          && m.ToId != vertex
+                         && Graph.Instance.GetMeasuresLeavingVertex(vertex).Count() > 0
                          select vertex).ToArray();
 
                         if (notGoingTo.Length > 0)
