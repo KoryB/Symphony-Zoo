@@ -18,6 +18,7 @@ namespace Symphony_Zoo_New.Controllers
         {
             Measure m;
             Measure needsComposing;
+            //search 10 random places for a location where the graph can be made more dense.
             for (int i = 0; i < 10; i++)
             {
                 m = Graph.Instance.GetRandomMeasure();
@@ -74,6 +75,8 @@ namespace Symphony_Zoo_New.Controllers
                     }
                 }
             }
+            //If the code has made it this far, then none of those 10 spots could become denser.
+            //At this point, just pick another random spot and make it branch off to nowhere.
             m = Graph.Instance.GetRandomNodeMeasure();
             //Possibility #3: The catch all - compose an edge from a node to nowhere.
             needsComposing = new Measure()

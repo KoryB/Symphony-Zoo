@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace Symphony_Zoo_New.Models
         public Guid Guid { get { return guid; } set { guid = value; } }
         private string midiData;
         public string MidiData { get { return midiData; } set { midiData = value; } }
+
+        [JsonIgnore]
         public Measure_DataTransferObject DTO
         {
             get
@@ -39,6 +42,8 @@ namespace Symphony_Zoo_New.Models
                 };
             }
         }
+
+        [JsonIgnore]
         public Edge_DataTransferObject Edge_DTO
         {
             get
@@ -51,6 +56,8 @@ namespace Symphony_Zoo_New.Models
                 };
             }
         }
+
+        [JsonIgnore]
         public EdgeDebug_DataTransferObject EdgeDebug_DTO
         {
             get

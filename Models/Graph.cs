@@ -10,41 +10,71 @@ using Newtonsoft.Json;
 
 namespace Symphony_Zoo_New.Models
 {
+
+    /* This directed graph contains a list of Measures.
+     * A Measure can be thought of as an edge.
+     * A Measure keeps track of which vertex # it comes from
+     * and which vertex # it goes to.
+     * Vertices are not represented anywhere else in the program.
+     */
     public sealed class Graph
     {
-        private static Graph instance = null;//singleton code
-        private static readonly object padlock = new object();//singleton code
-
-        private int largestVertexID;
-        private string savedFileLocation = "saved/";
-        public int LargestVertexID { get { return largestVertexID; } set { largestVertexID = value; } }
+        //The actual content of the graph
         private List<Measure> edges;
 
+        //singleton code
+        private static Graph instance = null;
+
+        //for thread safety of singleton
+        private static readonly object padlock = new object();
+
+        //the largest known vertex in the graph
+        private int largestVertexID;
+        public int LargestVertexID { get { return largestVertexID; } set { largestVertexID = value; } }
+
+        //Use this getter when creating a new vertex connecting a new measure.
         public int NextAvailableVertexID { get { largestVertexID++; return largestVertexID; } }
 
+        //folder containing "measure_#" files for graph persistence
+        private string savedFileLocation = "saved/";
+
+
+        //constructor
         Graph()
         {
-            // DON: If you find from/to that is larger than largestVertexID, reset this to that!
             largestVertexID = 0;
             edges = new List<Measure>();
 
-            // DON: Attempt to load file from [wherever], and deserialize it into the "edges" variable.
-            // DON: If that fails, create the firstEverMeasure object and have edges start with just that.
+            //Attempt to load file from savedFileLocation, and deserialize it into the "edges" variable.
             foreach(string file in Directory.EnumerateFiles(savedFileLocation)) 
             {
-                // Deserialize the file to look at the measure that it describes, could use error checking.
-                Measure curMeasure = JsonConvert.DeserializeObject<Measure>(File.ReadAllText(file));
+                //just in case there were other random files in the folder we don't care about
+                string prefix = "saved/measure_";
+                if (file.StartsWith(prefix) && int.TryParse(file.Substring(prefix.Length, file.Length - prefix.Length), out int throwAway))
+                {
+                    try
+                    {
+                        // Deserialize the file to look at the measure that it describes, could use error checking.
+                        Measure curMeasure = JsonConvert.DeserializeObject<Measure>(File.ReadAllText(file));
 
-                // Check to see if a vertex ID exists that is larger than largestVertexID.
-                if(curMeasure.ToId > largestVertexID) largestVertexID = curMeasure.ToId;
-                if(curMeasure.FromId > largestVertexID) largestVertexID = curMeasure.FromId;
+                        // Check to see if a vertex ID exists that is larger than largestVertexID.
+                        largestVertexID = Math.Max(largestVertexID, Math.Max(curMeasure.FromId, curMeasure.ToId));
 
-                // Push this measure into the edges List! If this loop never ran, make firstEverMeasure!
-                AddToGraph(curMeasure);
+                        // Push this measure into the edges List!
+                        AddToGraph(curMeasure);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.Write("\n ERROR lOADING MEASURE FILE:\n");
+                        Console.WriteLine(e.Message);
+                    }
+                    
+                }
             }
-            
-            // If edges is empty, I'm taking that to mean that the loop found nothing in savedFileLocation.
-            if(edges.Count == 0) 
+
+            //If no files are found in savedFileLocation,
+            //create the firstEverMeasure object and have edges start with just that.
+            if (edges.Count == 0) 
             {
                 Measure firstEverMeasure = new Measure
                 {
@@ -54,11 +84,16 @@ namespace Symphony_Zoo_New.Models
                     Edge = false
                 };
 
-                AddToGraph(firstEverMeasure); // DON: Use this, not .Add()
+                //Use AddToGraph, not edges.Add()
+                AddToGraph(firstEverMeasure);
             }
         }
 
-        public static Graph Instance //singleton code
+        /* singleton code
+         * Everywhere else in the app should go through
+         * Graph.Instance to use the graph class.
+         */
+        public static Graph Instance
         {
             get
             {
@@ -73,43 +108,58 @@ namespace Symphony_Zoo_New.Models
             }
         }
 
+        //Use this to add a completed measure that arrives at POST api/compose.
         public void AddToGraphFromAPI(Measure measure)
         {
             if(measure != null)
             {
+                //Find the corresponding measure idx in the graph that they checked out.
                 int[] checkedOutMeasure =
                 (from edge in edges
                  where edge.Guid == measure.Guid
                  select edges.IndexOf(edge)).ToArray();
+
+                //CheckedOutMeasure will be size zero if their guid is incorrect.
+                //Proceed if checkedOutMeasure contains a match
                 if (checkedOutMeasure.Length > 0)
                 {
-                    //save the midi file
-                    edges[checkedOutMeasure[0]].Edge = !GetMeasuresEnteringVertex(edges[checkedOutMeasure[0]].FromId).First().Edge;
-                    edges[checkedOutMeasure[0]].InProgress = false;
-                    edges[checkedOutMeasure[0]].MidiData = measure.MidiData;
+                    //No more than one correctly matched guid should be possible.
+                    if (checkedOutMeasure.Length > 1)
+                    {
+                        Console.WriteLine("That is very strange. More than one measure in the graph had guid " + measure.Guid.ToString());
+                    }
+                    else
+                    {
+                        //Save the completed midi file into the graph.
+                        edges[checkedOutMeasure[0]].Edge = !GetMeasuresEnteringVertex(edges[checkedOutMeasure[0]].FromId).First().Edge;
+                        edges[checkedOutMeasure[0]].InProgress = false;
+                        edges[checkedOutMeasure[0]].MidiData = measure.MidiData;
 
-                    // DON: Serialize and write out a file, filename is going to be checkedOutMeasure[idx]
-                    // Opting to use the index into the edges list as a best practice, rather than measure.
-                    string fname = "measure_" + checkedOutMeasure[0];
-                    string fdata = JsonConvert.SerializeObject(edges[checkedOutMeasure[0]]);
+                        // Serialize and write out the Measure.
+                        // Opting to use the index into the edges list as a best practice, rather than measure.
+                        string fname = "measure_" + checkedOutMeasure[0];
+                        string fdata = JsonConvert.SerializeObject(edges[checkedOutMeasure[0]]);
 
-                    // DON: Just overwrite whatever is already there with that name.
-                    File.WriteAllText(savedFileLocation + fname, fdata);
+                        // Just overwrite whatever is already there with that name.
+                        File.WriteAllText(savedFileLocation + fname, fdata);
+                    }
                 }
             }
         }
 
+
+        //Use this to add a measure to the graph and immediately check it out to the user via GET /api/compose
         public void AddToGraph(Measure measure)
         {
-            // DON: Save measure to a file name, that is the file name of the index where it's going into edges.
-            string fname = "measure_" + edges.Count.ToString();
+            // Add the measure to edges.
+            edges.Add(measure);
+
+            // Save measure to a file name, that is the file name of the index where it's going into edges.
+            string fname = "measure_" + (edges.Count - 1).ToString();
             string fdata = JsonConvert.SerializeObject(measure);
 
             // WriteAllText can potentially be slow with large files, StreamWriter can be an alternative if needed.
             File.WriteAllText(savedFileLocation + fname, fdata);
-
-            // Add the measure to edges.
-            edges.Add(measure);
         }
 
         public Measure GetRandomMeasure()
@@ -163,7 +213,10 @@ namespace Symphony_Zoo_New.Models
                 select edge.Edge_DTO;
         }
 
-        public IEnumerable<EdgeDebug_DataTransferObject> GetAllMeasures()//for debug use only.
+        //For debug use only. Used through GET api/graphdebug
+        //EdgeDebug_DataTransferObject contains way more metadata than
+        //Edge_DataTransferObject
+        public IEnumerable<EdgeDebug_DataTransferObject> GetAllMeasures()
         {
             return 
                 from edge in edges
