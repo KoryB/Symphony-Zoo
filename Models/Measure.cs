@@ -14,8 +14,8 @@ namespace Symphony_Zoo_New.Models
             get { return inProgress; }
             set
             {
-                if (value == true){ guid = Guid.NewGuid(); }
-                else { guid = default(Guid); }
+                if (value == true){ guid = System.Guid.NewGuid(); }
+                else { guid = (Guid?)null; }
                 inProgress = value;
             }
         }
@@ -25,52 +25,34 @@ namespace Symphony_Zoo_New.Models
         public int ToId { get { return toId; } set { toId = value; } }
         private bool edge;//0 for logical node, 1 for logical edge
         public bool Edge { get { return edge; } set { edge = value; } }
-        private Guid guid;
-        public Guid Guid { get { return guid; } set { guid = value; } }
+        private Guid? guid;
+        public Guid? Guid { get { return guid; } set { guid = value; } }
         private string midiData;
         public string MidiData { get { return midiData; } set { midiData = value; } }
 
         [JsonIgnore]
-        public Measure_DataTransferObject DTO
+        public Measure_DataTransferObject DTO => new Measure_DataTransferObject()
         {
-            get
-            {
-                return new Measure_DataTransferObject()
-                {
-                    Guid = guid,
-                    MidiData = midiData
-                };
-            }
-        }
+            Guid = guid,
+            MidiData = midiData
+        };
 
         [JsonIgnore]
-        public Edge_DataTransferObject Edge_DTO
+        public Edge_DataTransferObject Edge_DTO => new Edge_DataTransferObject()
         {
-            get
-            {
-                return new Edge_DataTransferObject()
-                {
-                    FromId = fromId,
-                    ToId = toId,
-                    MidiData = midiData
-                };
-            }
-        }
+            FromId = fromId,
+            ToId = toId,
+            MidiData = midiData
+        };
 
         [JsonIgnore]
-        public EdgeDebug_DataTransferObject EdgeDebug_DTO
+        public EdgeDebug_DataTransferObject EdgeDebug_DTO => new EdgeDebug_DataTransferObject()
         {
-            get
-            {
-                return new EdgeDebug_DataTransferObject()
-                {
-                    FromId = fromId,
-                    ToId = toId,
-                    MidiData = midiData,
-                    InProgress = inProgress,
-                    Edge = edge
-                };
-            }
-        }
+            FromId = fromId,
+            ToId = toId,
+            MidiData = midiData,
+            InProgress = inProgress,
+            Edge = edge
+        };
     }
 }

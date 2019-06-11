@@ -7,7 +7,7 @@ namespace Symphony_Zoo_New.Models
 {
     public class Measure_DataTransferObject
     {
-        public Guid Guid;
+        public Guid? Guid;
         public string MidiData;
     }
 }
