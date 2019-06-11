@@ -59,18 +59,25 @@ namespace Symphony_Zoo_New.Controllers
                         if (notGoingTo.Length > 0)
                         {
                             int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
-
-                            needsComposing = new Measure()
+                            Measure destinationMeasure;
+                            for(int j = 0; j < notGoingTo.Length; j++)
                             {
-                                Edge = true,
-                                FromId = m.ToId,
-                                ToId = GoToVertex,
-                                InProgress = true
-                            };
-
-                            Graph.Instance.AddToGraph(needsComposing);
-                            //Possibility #2: In this case, compose an edge from one node to another node.
-                            return new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, Graph.Instance.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0].DTO };
+                                destinationMeasure = Graph.Instance.GetMeasuresLeavingVertex((GoToVertex + i)%notGoingTo.Length).ToArray()[0];
+                                if(destinationMeasure.InProgress == false)
+                                {
+                                    needsComposing = new Measure()
+                                    {
+                                        Edge = true,
+                                        FromId = m.ToId,
+                                        ToId = GoToVertex,
+                                        InProgress = true
+                                    };
+                                    Measure_DataTransferObject destinationMeasure_DTO = destinationMeasure.DTO;
+                                    Graph.Instance.AddToGraph(needsComposing);
+                                    //Possibility #2: In this case, compose an edge from one node to another node.
+                                    return new Measure_DataTransferObject[] { m.DTO, needsComposing.DTO, destinationMeasure_DTO };
+                                }
+                            }
                         }
                     }
                 }
