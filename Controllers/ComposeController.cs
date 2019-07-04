@@ -26,7 +26,7 @@ namespace Symphony_Zoo_New.Controllers
                 {
                     if (m.Edge)
                     {
-                        if (Graph.Instance.GetMeasuresLeavingVertex(m.ToId).ToArray().Length == 0)
+                        if (Graph.Instance.GetMeasuresLeavingVertex(m.ToId).Count() == 0)
                         {
                             //compose a node.
                             needsComposing = new Measure()
@@ -63,7 +63,7 @@ namespace Symphony_Zoo_New.Controllers
                             for(int j = 0; j < notGoingTo.Length; j++)
                             {
                                 int GoToVertex = notGoingTo[(randomIdx + j) % notGoingTo.Length];
-                                destinationMeasure = Graph.Instance.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0];
+                                destinationMeasure = Graph.Instance.GetMeasuresLeavingVertex(GoToVertex).First();
                                 if(destinationMeasure.InProgress == false)
                                 {
                                     needsComposing = new Measure()
