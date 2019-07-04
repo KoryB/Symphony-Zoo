@@ -58,11 +58,12 @@ namespace Symphony_Zoo_New.Controllers
 
                         if (notGoingTo.Length > 0)
                         {
-                            int GoToVertex = notGoingTo[RandomProvider.Next(notGoingTo.Length)];
+                            int randomIdx = RandomProvider.Next(notGoingTo.Length);
                             Measure destinationMeasure;
                             for(int j = 0; j < notGoingTo.Length; j++)
                             {
-                                destinationMeasure = Graph.Instance.GetMeasuresLeavingVertex((GoToVertex + i)%notGoingTo.Length).ToArray()[0];
+                                int GoToVertex = notGoingTo[(randomIdx + j) % notGoingTo.Length];
+                                destinationMeasure = Graph.Instance.GetMeasuresLeavingVertex(GoToVertex).ToArray()[0];
                                 if(destinationMeasure.InProgress == false)
                                 {
                                     needsComposing = new Measure()
