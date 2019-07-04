@@ -2374,6 +2374,28 @@ module.exports = {
 
         previewMidi() {
             console.log("Nice tunes dude!");
+            console.log("ok");
+
+            var filter = new Tone.Filter({
+                type: 'bandpass',
+                Q: 12
+            }).toMaster()
+
+            //schedule a series of frequency changes
+            filter.frequency.setValueAtTime('C5', 0)
+            filter.frequency.setValueAtTime('E5', 0.5)
+            filter.frequency.setValueAtTime('G5', 1)
+            filter.frequency.setValueAtTime('B5', 1.5)
+            filter.frequency.setValueAtTime('C6', 2)
+            filter.frequency.linearRampToValueAtTime('C1', 3)
+
+            var noise = new Tone.Noise("brown").connect(filter).start(0).stop(3)
+
+            //schedule an amplitude curve
+            noise.volume.setValueAtTime(-20, 0)
+            noise.volume.linearRampToValueAtTime(20, 2)
+            noise.volume.linearRampToValueAtTime(-Infinity, 3)
+            console.log("ok, bruv. you right. you right.");
         }
     }
 }
@@ -4324,7 +4346,7 @@ module.exports={
   "_args": [
     [
       "midi-writer-js@1.7.1",
-      "C:\\Users\\jla21\\source\\repos\\KoryB\\Symphony-Zoo"
+      "C:\\Users\\albra\\source\\repos\\Symphony-Zoo"
     ]
   ],
   "_from": "midi-writer-js@1.7.1",
@@ -4348,7 +4370,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/midi-writer-js/-/midi-writer-js-1.7.1.tgz",
   "_spec": "1.7.1",
-  "_where": "C:\\Users\\jla21\\source\\repos\\KoryB\\Symphony-Zoo",
+  "_where": "C:\\Users\\albra\\source\\repos\\Symphony-Zoo",
   "author": {
     "name": "Garrett Grimm"
   },
